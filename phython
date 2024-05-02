@@ -1,0 +1,67 @@
+
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score, classification_report
+
+# Specify the file path to your CSV file
+file_path = r"C:\Users\nabil\Downloads\S1Data (2).csv"
+
+# Read the CSV file into a DataFrame
+df = pd.read_csv(file_path)
+
+# Clean up column names by stripping leading/trailing spaces and converting to lowercase
+df.columns = df.columns.str.strip().str.lower()
+
+# Display the DataFrame columns after cleaning
+print(df.columns)
+
+# Data preprocessing
+# Update the features list to match the column names in your DataFrame
+features = ['age', 'anaemia', 'creatinine', 'diabetes',
+             'pletelets', 'sodium', 'smoking', 'time']
+target = 'event'  # Use the correct target column name
+
+# Ensure all feature names are present in DataFrame columns
+missing_features = [feat for feat in features if feat not in df.columns]
+if missing_features:
+    print(f"Features missing in DataFrame: {missing_features}")
+else:
+    # Verify if the target column is present in the DataFrame
+    if target not in df.columns:
+        print(f"Target column '{target}' not found in DataFrame columns after cleaning.")
+    else:
+        # Extract features (X) and target (y)
+        X = df[features]
+        y = df[target]
+
+        # Adjust the test_size parameter to change the data split ratio (e.g., 70% training, 30% testing)
+        test_size = 0.3  # Modify this value to change the ratio
+
+        # Split the data into training and testing sets
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=42)
+
+        # Calculate the ratio of training to testing data
+        train_ratio = len(X_train) / len(X)
+        test_ratio = len(X_test) / len(X)
+
+        print(f"Training data ratio: {train_ratio:.2f}")
+        print(f"Testing data ratio: {test_ratio:.2f}")
+
+        # Train a Decision Tree classifier
+        model = DecisionTreeClassifier(random_state=42)
+        model.fit(X_train, y_train)
+
+        # Make predictions
+        y_pred = model.predict(X_test)
+
+        # Evaluate the model
+        accuracy = accuracy_score(y_test, y_pred)
+        print(f"Accuracy using Decision Tree Classifier: {accuracy:.2f}")
+
+        # Display classification report
+        print("Classification Report using Decision Tree Classifier:")
+        print(classification_report(y_test, y_pred))
+
+# Print the DataFrame content
+print(df.head())
